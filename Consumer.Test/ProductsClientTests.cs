@@ -5,9 +5,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using PactNet;
-using PactNet.Matchers;
 using Xunit.Abstractions;
-using FluentAssertions;
+using Match = PactNet.Matchers.Match;
 
 namespace Consumer.Test
 {
@@ -15,16 +14,16 @@ namespace Consumer.Test
     {
         private readonly IPactBuilderV3 _pact;
         private readonly Mock<IHttpClientFactory> _mockFactory;
-        private readonly List<Product> _products;
+        // private readonly List<Product> _products;
 
         public ProductsClientTests(ITestOutputHelper output)
         {
 
-            _products = new List<Product>()
-            {
-                new Product(9,"CREDIT_CARD","GEM Visa","v2"),
-                new Product(10,"CREDIT_CARD","28 Degrees","v1"),
-            };
+            // _products = new List<Product>()
+            // {
+            //     new Product(9,"CREDIT_CARD","GEM Visa","v2"),
+            //     new Product(10,"CREDIT_CARD","28 Degrees","v1"),
+            // };
 
             _mockFactory = new Mock<IHttpClientFactory>();
 
@@ -49,7 +48,7 @@ namespace Consumer.Test
         [Fact]
         public async Task GetProductsByIdAsync()
         {
-
+            var expected = new Product(9, "CREDIT_CARD", "GEM Visa", "v2");
             _pact
                 .UponReceiving("request for a product by id")
                     .Given("a product with id {id} exists", new Dictionary<string, string> { ["id"] = "9" })
@@ -57,7 +56,13 @@ namespace Consumer.Test
                     .WithHeader("Accept", "application/json")
                 .WillRespond()
                     .WithStatus(HttpStatusCode.OK)
-                    .WithJsonBody(new TypeMatcher(_products[0]));
+                    .WithJsonBody(new
+                    {
+                        Id = Match.Integer(expected.Id),
+                        Name = Match.Type(expected.Name),
+                        Type = Match.Type(expected.Type),
+                        Version = Match.Type(expected.Version),
+                    });
 
             await _pact.VerifyAsync(async ctx =>
             {
@@ -75,8 +80,8 @@ namespace Consumer.Test
                 var client = new ProductClient(_mockFactory.Object);
                 Product product = await client.GetProductsByIdAsync(9);
 
-                product.id.Equals(9);
-                product.type.Equals("GEM Visa");
+                product.Id.Equals(9);
+                product.Type.Equals("GEM Visa");
             });
         }
 
