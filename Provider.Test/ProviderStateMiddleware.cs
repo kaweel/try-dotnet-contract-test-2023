@@ -49,6 +49,7 @@ namespace Provider.Tests
 
         public async Task InvokeAsync(HttpContext context)
         {
+            Console.WriteLine("context.Request.Path.Value: " + context.Request.Path.Value);
             if (!(context.Request.Path.Value?.StartsWith("/provider-states") ?? false))
             {
                 await _next.Invoke(context);
