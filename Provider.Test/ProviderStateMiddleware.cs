@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Provider.Products;
 using Provider.Test;
@@ -49,7 +44,6 @@ namespace Provider.Tests
 
         public async Task InvokeAsync(HttpContext context)
         {
-            Console.WriteLine("context.Request.Path.Value: " + context.Request.Path.Value);
             if (!(context.Request.Path.Value?.StartsWith("/provider-states") ?? false))
             {
                 await _next.Invoke(context);
