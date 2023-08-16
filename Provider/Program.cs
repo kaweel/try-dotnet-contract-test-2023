@@ -32,6 +32,7 @@ namespace Provider
 {
     public class Program
     {
+        private static readonly Uri _providerUri = new("http://localhost:5195");
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
@@ -41,6 +42,7 @@ namespace Provider
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.UseUrls(_providerUri.ToString());
                     webBuilder.UseStartup<Startup>();
                 });
     }

@@ -1,21 +1,39 @@
 {
   "consumer": {
-    "name": "ProductsClient"
+    "name": "Comsumer"
   },
   "interactions": [
     {
       "description": "request for a product by id",
       "providerStates": [
         {
-          "name": "a product with id {id} exists",
-          "params": {
-            "id": 9
-          }
+          "name": "a product with id `10` doesn't exists"
         }
       ],
       "request": {
         "headers": {
-          "Accept": "application/json"
+          "Accept": "application/json; charset=utf-8"
+        },
+        "method": "GET",
+        "path": "/api/products/10"
+      },
+      "response": {
+        "headers": {
+          "Content-Type": "application/problem+json; charset=utf-8"
+        },
+        "status": 404
+      }
+    },
+    {
+      "description": "request for a product by id",
+      "providerStates": [
+        {
+          "name": "a product with id `9` exists"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Accept": "application/json; charset=utf-8"
         },
         "method": "GET",
         "path": "/api/products/9"
@@ -28,7 +46,7 @@
           "version": "v2"
         },
         "headers": {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json; charset=utf-8"
         },
         "matchingRules": {
           "body": {
@@ -64,7 +82,8 @@
                 }
               ]
             }
-          }
+          },
+          "header": {}
         },
         "status": 200
       }
@@ -80,6 +99,6 @@
     }
   },
   "provider": {
-    "name": "Product API"
+    "name": "Provider"
   }
 }

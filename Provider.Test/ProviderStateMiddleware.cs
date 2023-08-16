@@ -6,79 +6,74 @@ using Provider.Test;
 
 namespace Provider.Tests
 {
-    /// <summary>
-    /// Middleware for handling provider state requests
-    /// </summary>
+
     public class ProviderStateMiddleware
     {
-        private static readonly JsonSerializerOptions Options = new()
+        private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
         {
             PropertyNameCaseInsensitive = true
         };
 
-        private readonly IDictionary<string, Func<IDictionary<string, object>, Task>> _providerStates;
+        private readonly IDictionary<string, Action> _providerStates;
         private readonly RequestDelegate _next;
-        private readonly IProductService _products;
+        private readonly FakeProductService _products;
 
-        /// <summary>
-        /// Initialises a new instance of the <see cref="ProviderStateMiddleware"/> class.
-        /// </summary>
-        /// <param name="next">Next request delegate</param>
-        /// <param name="orders">Orders repository for actioning provider state requests</param>
+
         public ProviderStateMiddleware(RequestDelegate next, IProductService products)
         {
             _next = next;
-            _products = products;
-            _providerStates = new Dictionary<string, Func<IDictionary<string, object>, Task>>
+            _products = (FakeProductService)products;
+            _providerStates = new Dictionary<string, Action>
             {
-                ["a product with id {id} exists"] = this.EnsureProductExistsAsync
+                ["a product with id `9` exists"] = this.InsertProductId9,
+                ["a product with id `10` doesn't exists"] = this.EnsureProduct9DoesNotExists,
             };
 
         }
 
-        private async Task EnsureProductExistsAsync(IDictionary<string, object> parameters)
+        private async void InsertProductId9()
         {
-            JsonElement id = (JsonElement)parameters["id"];
-            await _products.InsertAsync(new Product(id.GetInt32(), "CREDIT_CARD", "GEM Visa", "v2"));
+            await _products.InsertAsync(new Product(9, "CREDIT_CARD", "GEM Visa", "v2"));
+        }
+
+        private async void EnsureProduct9DoesNotExists()
+        {
+            await _products.removeAllAsync();
+        }
+
+        private async Task HandleProviderStatesRequest(HttpContext context)
+        {
+            // context.Response.StatusCode = StatusCodes.Status200OK;
+            if (context.Request.Method != HttpMethod.Post.ToString())
+            {
+                return;
+            }
+
+            string jsonRequestBody;
+
+            using (var reader = new StreamReader(context.Request.Body, Encoding.UTF8))
+            {
+                jsonRequestBody = await reader.ReadToEndAsync();
+            }
+
+            ProviderState? providerState = JsonSerializer.Deserialize<ProviderState>(jsonRequestBody, _jsonSerializerOptions);
+            if (providerState != null && !string.IsNullOrEmpty(providerState.State))
+            {
+                _providerStates[providerState.State].Invoke();
+            }
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (!(context.Request.Path.Value?.StartsWith("/provider-states") ?? false))
+            if (context.Request.Path.Value!.StartsWith("/provider-states"))
             {
-                await _next.Invoke(context);
+                await HandleProviderStatesRequest(context);
+                await context.Response.WriteAsync(text: string.Empty);
                 return;
             }
 
-            context.Response.StatusCode = StatusCodes.Status200OK;
-
-            if (context.Request.Method == HttpMethod.Post.ToString())
-            {
-                string jsonRequestBody;
-
-                using (var reader = new StreamReader(context.Request.Body, Encoding.UTF8))
-                {
-                    jsonRequestBody = await reader.ReadToEndAsync();
-                }
-
-                try
-                {
-                    ProviderState? providerState = JsonSerializer.Deserialize<ProviderState>(jsonRequestBody, Options);
-
-                    if (!string.IsNullOrEmpty(providerState?.State))
-                    {
-                        await _providerStates[providerState.State].Invoke(providerState.Params);
-                    }
-                }
-                catch (Exception e)
-                {
-                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                    await context.Response.WriteAsync("Failed to deserialise JSON provider state body:");
-                    await context.Response.WriteAsync(jsonRequestBody);
-                    await context.Response.WriteAsync(string.Empty);
-                    await context.Response.WriteAsync(e.ToString());
-                }
-            }
+            await _next.Invoke(context);
+            return;
         }
     }
 }

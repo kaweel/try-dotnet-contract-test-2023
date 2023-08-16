@@ -1,0 +1,44 @@
+version: "3"
+
+services:
+  contract-postgres:
+    image: postgres:15.3-alpine3.18
+    healthcheck:
+      test: psql postgres --command "select 1" -U postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+
+  contract-pact-broker:
+    image: pactfoundation/pact-broker:latest-multi
+    ports:
+      - 8000:9292
+    environment:
+      PACT_BROKER_BASIC_AUTH_USERNAME: try_pact
+      PACT_BROKER_BASIC_AUTH_PASSWORD: try_pact
+      PACT_BROKER_DATABASE_USERNAME: postgres
+      PACT_BROKER_DATABASE_PASSWORD: password
+      PACT_BROKER_DATABASE_HOST: contract-postgres
+      PACT_BROKER_DATABASE_NAME: postgres
+
+  contract-pact-broker-publish:
+    image: pactfoundation/pact-cli:latest-multi
+    environment:
+      PACT_BROKER_BASE_URL: http://contract-pact-broker:9292
+      PACT_BROKER_USERNAME: try_pact
+      PACT_BROKER_PASSWORD: try_pact
+    command: "publish /pacts --consumer-app-version 1.0.0"
+    volumes:
+      - ./pacts:/pacts
+
+  contract-pact-broker-verify:
+    image: pactfoundation/pact-cli:latest-multi
+    environment:
+      PACT_BROKER_BASE_URL: http://contract-pact-broker:9292
+      PACT_BROKER_USERNAME: try_pact
+      PACT_BROKER_PASSWORD: try_pact
+      PACT_BROKER_PUBLISH_VERIFICATION_RESULTS: true
+    command: "verify  --provider-base-url http://host.docker.internal:5195 --provider 'Provider' --provider-app-version 1.0.0 --wait 10"

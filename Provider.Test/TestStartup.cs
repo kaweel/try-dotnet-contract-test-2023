@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Provider.Products;
@@ -8,25 +9,28 @@ namespace Provider.Tests
 {
     public class TestStartup
     {
-        private readonly Startup inner;
+        public IConfiguration _configuration { get; }
 
         public TestStartup(IConfiguration configuration)
         {
-            this.inner = new Startup(configuration);
+            _configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IProductService, FakeProductService>();
-
-            this.inner.ConfigureServices(services);
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+            services.AddMvc();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment _)
         {
             app.UseMiddleware<ProviderStateMiddleware>();
-
-            this.inner.Configure(app, env);
+            app.UseRouting();
+            app.UseEndpoints(e => e.MapControllers());
         }
     }
 }

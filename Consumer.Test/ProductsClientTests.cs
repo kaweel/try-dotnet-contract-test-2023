@@ -42,19 +42,20 @@ namespace Consumer.Test
                 LogLevel = PactLogLevel.Debug
             };
 
-            _pact = Pact.V3("ProductsClient", "Product API", config).WithHttpInteractions();
+            _pact = Pact.V3("Comsumer", "Provider", config).WithHttpInteractions();
         }
 
         [Fact]
-        public async Task GetProductsByIdAsync()
+        public async Task GetProductsByIdAsyncExists()
         {
             var expected = new Product(9, "CREDIT_CARD", "GEM Visa", "v2");
             _pact
                 .UponReceiving("request for a product by id")
-                    .Given("a product with id {id} exists", new Dictionary<string, string> { ["id"] = "9" })
+                    .Given("a product with id `9` exists")
                     .WithRequest(HttpMethod.Get, "/api/products/9")
-                    .WithHeader("Accept", "application/json")
+                    .WithHeader("Accept", "application/json; charset=utf-8")
                 .WillRespond()
+                    .WithHeader("Content-Type", "application/json; charset=utf-8")
                     .WithStatus(HttpStatusCode.OK)
                     .WithJsonBody(new
                     {
@@ -73,7 +74,7 @@ namespace Consumer.Test
                         BaseAddress = ctx.MockServerUri,
                         DefaultRequestHeaders =
                         {
-                            Accept = { MediaTypeWithQualityHeaderValue.Parse("application/json") }
+                            Accept = { MediaTypeWithQualityHeaderValue.Parse("application/json; charset=utf-8") }
                         }
                     });
 
@@ -85,37 +86,35 @@ namespace Consumer.Test
             });
         }
 
-        // [Fact]
-        // public async Task GetAllProducts()
-        // {
+        [Fact]
+        public async Task GetProductsByIdAsyncDoesNotExists()
+        {
+            _pact
+                .UponReceiving("request for a product by id")
+                    .Given("a product with id `10` doesn't exists")
+                    .WithRequest(HttpMethod.Get, "/api/products/10")
+                    .WithHeader("Accept", "application/json; charset=utf-8")
+                .WillRespond()
+                    .WithHeader("Content-Type", "application/problem+json; charset=utf-8")
+                    .WithStatus(HttpStatusCode.NotFound);
 
-        //     _pact
-        //         .UponReceiving("a request for all products")
-        //             .Given("products exists")
-        //             .WithRequest(HttpMethod.Get, "/api/products")
-        //             .WithHeader("Accept", "application/json")
-        //         .WillRespond()
-        //             .WithStatus(HttpStatusCode.OK)
-        //             .WithJsonBody(new TypeMatcher(_products));
+            await _pact.VerifyAsync(async ctx =>
+            {
+                _mockFactory
+                    .Setup(f => f.CreateClient("Products"))
+                    .Returns(() => new HttpClient
+                    {
+                        BaseAddress = ctx.MockServerUri,
+                        DefaultRequestHeaders =
+                        {
+                            Accept = { MediaTypeWithQualityHeaderValue.Parse("application/json; charset=utf-8") }
+                        }
+                    });
 
-        //     await _pact.VerifyAsync(async ctx =>
-        //     {
-        //         _mockFactory
-        //             .Setup(f => f.CreateClient("Products"))
-        //             .Returns(() => new HttpClient
-        //             {
-        //                 BaseAddress = ctx.MockServerUri,
-        //                 DefaultRequestHeaders =
-        //                 {
-        //                     Accept = { MediaTypeWithQualityHeaderValue.Parse("application/json") }
-        //                 }
-        //             });
+                var client = new ProductClient(_mockFactory.Object);
 
-        //         var client = new ProductClient(_mockFactory.Object);
-        //         List<Product> products = await client.Get();
-
-        //         products.Should().HaveCount(2);
-        //     });
-        // }
+                await Assert.ThrowsAsync<HttpRequestException>(async () => await client.GetProductsByIdAsync(10));
+            });
+        }
     }
 }

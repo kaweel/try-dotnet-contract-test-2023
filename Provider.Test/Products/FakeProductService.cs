@@ -5,7 +5,7 @@ namespace Provider.Products
     public class FakeProductService : IProductService
     {
 
-        private readonly ConcurrentDictionary<int, Product> _products = new();
+        private ConcurrentDictionary<int, Product> _products = new();
 
         public FakeProductService()
         {
@@ -24,6 +24,11 @@ namespace Provider.Products
         public Task InsertAsync(Product product)
         {
             _products[product.id] = product;
+            return Task.CompletedTask;
+        }
+
+        public Task removeAllAsync(){
+            _products.Clear();
             return Task.CompletedTask;
         }
     }

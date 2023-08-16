@@ -1,11 +1,7 @@
-using System.Collections.Generic;
-
 namespace Provider.Test
 {
-    /// <summary>
-    /// Provider state DTO
-    /// </summary>
-    /// <param name="State">State description</param>
-    /// <param name="Params">State parameters</param>
-    public record ProviderState(string State, IDictionary<string, object> Params);
+    public class ProviderState
+    {
+        public required string State { get; set; }
+    }
 }
