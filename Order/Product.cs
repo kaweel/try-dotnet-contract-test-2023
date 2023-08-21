@@ -1,20 +1,18 @@
 namespace Order
 {
-    // public class Product
-    // {
-    //     public int id { get; set; }
-    //     public string name { get; set; }
-    //     public string type { get; set; }
-    //     public string version { get; set; }
+    public class Product
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public string Status { get; set; }
 
-    //     public Product(int id, string name, string type, string version)
-    //     {
-    //         this.id = id;
-    //         this.name = name;
-    //         this.type = type;
-    //         this.version = version;
-    //     }
-    // }
-
-    public record Product(int Id, string Name, string Type, string Version);
+        public Product(int Id, string Name, string Type, string Status)
+        {
+            this.Id = Id;
+            this.Name = Name;
+            this.Type = Type;
+            this.Status = Status;
+        }
+    }
 }

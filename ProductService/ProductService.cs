@@ -8,7 +8,7 @@ namespace ProductService
 
         public ProductService()
         {
-            _products[9] = new Product(9, "CREDIT_CARD", "GEM Visa", "v2");
+            _products[9] = new Product(9, "CL500", "Motorcycle", "InStock");
         }
 
         public Task<Product> GetProductByIdAsync(int id)
@@ -18,7 +18,13 @@ namespace ProductService
 
         public Task InsertAsync(Product product)
         {
-            _products[product.id] = product;
+            _products[product.Id] = product;
+            return Task.CompletedTask;
+        }
+
+        public Task ReserveProduct(int id)
+        {
+            _products[id].Status = "Reserved";
             return Task.CompletedTask;
         }
     }

@@ -31,9 +31,9 @@ namespace ProductService.Test
                 {
                     LogLevel = PactLogLevel.Debug,
                     Outputters = new List<IOutput>
-                {
-                    new XunitOutput(output)
-                }
+                    {
+                        new XunitOutput(output)
+                    }
                 });
         }
 
@@ -44,11 +44,12 @@ namespace ProductService.Test
         }
 
         [Fact]
+        [Trait("Category", "Provider")]
         public void Verify()
         {
-            var pactFile = new FileInfo(Path.Join("..", "..", "..", "..", "pacts", "Order-Consumer-GetProductsById-Product-Provider-GetProductsById.json"));
+            var pactFile = new FileInfo(Path.Join("..", "..", "..", "..", "pacts", "Order-GetProductsById-Product.json"));
             _verifier
-            .ServiceProvider("Product-Provider-GetProductsById", _providerUri)
+            .ServiceProvider("Product", _providerUri)
             .WithFileSource(pactFile)
             .Verify();
         }

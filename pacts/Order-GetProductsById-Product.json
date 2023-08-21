@@ -1,6 +1,6 @@
 {
   "consumer": {
-    "name": "Order-Consumer-GetProductsById"
+    "name": "Order-GetProductsById"
   },
   "interactions": [
     {
@@ -15,7 +15,7 @@
           "Accept": "application/json; charset=utf-8"
         },
         "method": "GET",
-        "path": "/api/products/10"
+        "path": "/api/product/10"
       },
       "response": {
         "headers": {
@@ -36,14 +36,14 @@
           "Accept": "application/json; charset=utf-8"
         },
         "method": "GET",
-        "path": "/api/products/9"
+        "path": "/api/product/9"
       },
       "response": {
         "body": {
           "id": 9,
-          "name": "CREDIT_CARD",
-          "type": "GEM Visa",
-          "version": "v2"
+          "name": "CL500",
+          "status": "InStock",
+          "type": "Motorcycle"
         },
         "headers": {
           "Content-Type": "application/json; charset=utf-8"
@@ -62,6 +62,6 @@
     }
   },
   "provider": {
-    "name": "Product-Provider-GetProductsById"
+    "name": "Product"
   }
 }

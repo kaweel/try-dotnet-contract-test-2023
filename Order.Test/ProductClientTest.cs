@@ -1,30 +1,21 @@
+using System.ComponentModel;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using Moq;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using PactNet;
 using Xunit.Abstractions;
-using Match = PactNet.Matchers.Match;
 
 namespace Order.Test
 {
-    public class ProductsClientTests
+    public class ProductClientTest
     {
         private readonly IPactBuilderV3 _pact;
         private readonly Mock<IHttpClientFactory> _mockFactory;
-        // private readonly List<Product> _products;
 
-        public ProductsClientTests(ITestOutputHelper output)
+        public ProductClientTest(ITestOutputHelper output)
         {
-
-            // _products = new List<Product>()
-            // {
-            //     new Product(9,"CREDIT_CARD","GEM Visa","v2"),
-            //     new Product(10,"CREDIT_CARD","28 Degrees","v1"),
-            // };
 
             _mockFactory = new Mock<IHttpClientFactory>();
 
@@ -38,22 +29,22 @@ namespace Order.Test
                 DefaultJsonSettings = new JsonSerializerSettings
                 {
                     ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                    Converters = new JsonConverter[] { new StringEnumConverter() }
                 },
                 LogLevel = PactLogLevel.Debug
             };
 
-            _pact = Pact.V3("Order-Consumer-GetProductsById", "Product-Provider-GetProductsById", config).WithHttpInteractions();
+            _pact = Pact.V3("Order-GetProductsById", "Product", config).WithHttpInteractions();
         }
 
         [Fact]
+        [Trait("Category", "Consumer")]
         public async Task GetProductsByIdAsyncExists()
         {
-            var expected = new Product(9, "CREDIT_CARD", "GEM Visa", "v2");
+            var expected = new Product(9, "CL500", "Motorcycle", "InStock");
             _pact
                 .UponReceiving("request for a product by id")
                     .Given("a product with id `9` exists")
-                    .WithRequest(HttpMethod.Get, "/api/products/9")
+                    .WithRequest(HttpMethod.Get, "/api/product/9")
                     .WithHeader("Accept", "application/json; charset=utf-8")
                 .WillRespond()
                     .WithHeader("Content-Type", "application/json; charset=utf-8")
@@ -64,7 +55,7 @@ namespace Order.Test
                             expected.Id,
                             expected.Name,
                             expected.Type,
-                            expected.Version
+                            expected.Status
                         }
                     );
             // .WithJsonBody(new
@@ -78,7 +69,7 @@ namespace Order.Test
             await _pact.VerifyAsync(async ctx =>
             {
                 _mockFactory
-                    .Setup(f => f.CreateClient("Products"))
+                    .Setup(f => f.CreateClient("Product"))
                     .Returns(() => new HttpClient
                     {
                         BaseAddress = ctx.MockServerUri,
@@ -92,17 +83,19 @@ namespace Order.Test
                 Product product = await client.GetProductsByIdAsync(9);
 
                 product.Id.Equals(9);
-                product.Type.Equals("GEM Visa");
+                product.Name.Equals("CL500");
+                product.Type.Equals("Motorcycle");
             });
         }
 
         [Fact]
+        [Trait("Category", "Consumer")]
         public async Task GetProductsByIdAsyncDoesNotExists()
         {
             _pact
                 .UponReceiving("request for a product by id")
                     .Given("a product with id `10` doesn't exists")
-                    .WithRequest(HttpMethod.Get, "/api/products/10")
+                    .WithRequest(HttpMethod.Get, "/api/product/10")
                     .WithHeader("Accept", "application/json; charset=utf-8")
                 .WillRespond()
                     .WithHeader("Content-Type", "application/problem+json; charset=utf-8")
@@ -111,7 +104,7 @@ namespace Order.Test
             await _pact.VerifyAsync(async ctx =>
             {
                 _mockFactory
-                    .Setup(f => f.CreateClient("Products"))
+                    .Setup(f => f.CreateClient("Product"))
                     .Returns(() => new HttpClient
                     {
                         BaseAddress = ctx.MockServerUri,

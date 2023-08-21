@@ -17,19 +17,10 @@ namespace Order
             _factory = factory;
         }
 
-        // public async Task<List<Product>> GetAllProductsAsync()
-        // {
-        //     using HttpClient client = _factory.CreateClient("Products");
-        //     var httpResponseMessage = await client.GetAsync("/api/products");
-        //     httpResponseMessage.EnsureSuccessStatusCode();
-        //     var json = await httpResponseMessage.Content.ReadAsStreamAsync();
-        //     var resp = await JsonSerializer.DeserializeAsync<List<Product>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        //     return resp!;
-        // }
         public async Task<Product> GetProductsByIdAsync(int id)
         {
-            using HttpClient client = _factory.CreateClient("Products");
-            var httpResponseMessage = await client.GetAsync($"/api/products/{id}");
+            using HttpClient client = _factory.CreateClient("Product");
+            var httpResponseMessage = await client.GetAsync($"/api/product/{id}");
             httpResponseMessage.EnsureSuccessStatusCode();
             var json = await httpResponseMessage.Content.ReadAsStreamAsync();
             var resp = await JsonSerializer.DeserializeAsync<Product>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
