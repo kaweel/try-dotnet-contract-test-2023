@@ -7,14 +7,14 @@ using Xunit.Abstractions;
 
 namespace ProductService.Test
 {
-    public class ProviderTests : IDisposable
+    public class ProductProviderTests : IDisposable
     {
         private static readonly Uri _providerUri = new("http://localhost:5195");
 
         private readonly IHost _server;
         private readonly PactVerifier _verifier;
 
-        public ProviderTests(ITestOutputHelper output)
+        public ProductProviderTests(ITestOutputHelper output)
         {
             _server = Host.CreateDefaultBuilder()
                               .ConfigureWebHostDefaults(webBuilder =>

@@ -36,7 +36,7 @@ namespace Order.Test
         {
             var pactFile = new FileInfo(Path.Join("..", "..", "..", "..", "pacts", "Product-Reserved-Order.json"));
             _verifier
-            .MessagingProvider("Product")
+            .MessagingProvider("Order")
             .WithProviderMessages(scenarios =>
             {
                 scenarios.Add("an event mark reserve product", () => new ReservedEvent(9));
