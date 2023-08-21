@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using Moq;
 using Newtonsoft.Json;
@@ -8,7 +9,7 @@ using PactNet;
 using Xunit.Abstractions;
 using Match = PactNet.Matchers.Match;
 
-namespace Consumer.Test
+namespace Order.Test
 {
     public class ProductsClientTests
     {
@@ -42,7 +43,7 @@ namespace Consumer.Test
                 LogLevel = PactLogLevel.Debug
             };
 
-            _pact = Pact.V3("Comsumer", "Provider", config).WithHttpInteractions();
+            _pact = Pact.V3("Order-Consumer-GetProductsById", "Product-Provider-GetProductsById", config).WithHttpInteractions();
         }
 
         [Fact]
@@ -57,13 +58,22 @@ namespace Consumer.Test
                 .WillRespond()
                     .WithHeader("Content-Type", "application/json; charset=utf-8")
                     .WithStatus(HttpStatusCode.OK)
-                    .WithJsonBody(new
-                    {
-                        Id = Match.Integer(expected.Id),
-                        Name = Match.Type(expected.Name),
-                        Type = Match.Type(expected.Type),
-                        Version = Match.Type(expected.Version),
-                    });
+                    .WithJsonBody(
+                        new
+                        {
+                            expected.Id,
+                            expected.Name,
+                            expected.Type,
+                            expected.Version
+                        }
+                    );
+            // .WithJsonBody(new
+            // {
+            //     Id = Match.Integer(expected.Id),
+            //     Name = Match.Type(expected.Name),
+            //     Type = Match.Type(expected.Type),
+            //     Version = Match.Type(expected.Version),
+            // });
 
             await _pact.VerifyAsync(async ctx =>
             {

@@ -1,7 +1,7 @@
 ﻿using PactNet.Infrastructure.Outputters;
 using Xunit.Abstractions;
 
-namespace Provider.Tests
+namespace ProductService.Test
 {
     /// <summary>
     /// Output to an xUnit test output helper

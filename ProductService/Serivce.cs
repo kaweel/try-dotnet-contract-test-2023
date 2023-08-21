@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace Provider.Products
+namespace ProductService
 {
     public class ProductService : IProductService
     {        

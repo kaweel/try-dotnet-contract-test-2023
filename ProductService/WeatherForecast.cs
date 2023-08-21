@@ -1,4 +1,4 @@
-namespace Provider;
+namespace ProductService;
 
 public class WeatherForecast
 {

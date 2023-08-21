@@ -1,4 +1,4 @@
-namespace Consumer
+namespace Order
 {
     public interface IProductClient
     {

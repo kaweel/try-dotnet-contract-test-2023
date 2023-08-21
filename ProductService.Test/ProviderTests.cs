@@ -5,12 +5,11 @@ using PactNet.Infrastructure.Outputters;
 using PactNet.Verifier;
 using Xunit.Abstractions;
 
-namespace Provider.Tests
+namespace ProductService.Test
 {
     public class ProviderTests : IDisposable
     {
         private static readonly Uri _providerUri = new("http://localhost:5195");
-        // private static readonly Uri _providerStateUri = new("http://localhost:5196");
 
         private readonly IHost _server;
         private readonly PactVerifier _verifier;
@@ -47,11 +46,10 @@ namespace Provider.Tests
         [Fact]
         public void Verify()
         {
-            var pactFile = new FileInfo(Path.Join("..", "..", "..", "..", "pacts", "Comsumer-Provider.json"));
+            var pactFile = new FileInfo(Path.Join("..", "..", "..", "..", "pacts", "Order-Consumer-GetProductsById-Product-Provider-GetProductsById.json"));
             _verifier
-            .ServiceProvider("Provider", _providerUri)
+            .ServiceProvider("Product-Provider-GetProductsById", _providerUri)
             .WithFileSource(pactFile)
-            // .WithProviderStateUrl(new Uri(_providerStateUri, "/provider-states"))
             .Verify();
         }
     }

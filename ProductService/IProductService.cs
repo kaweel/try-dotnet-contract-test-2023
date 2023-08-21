@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Provider.Products
+namespace ProductService
 {
     public interface IProductService
     {

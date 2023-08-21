@@ -2,9 +2,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi.Models;
-using Provider.Products;
 
-namespace Provider
+namespace ProductService
 {
     public class Startup
     {

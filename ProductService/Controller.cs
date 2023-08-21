@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Provider.Products
+namespace ProductService
 {
     [ApiController]
     [Route("/api/[controller]")]

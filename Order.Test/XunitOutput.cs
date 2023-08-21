@@ -1,7 +1,7 @@
 ﻿using PactNet.Infrastructure.Outputters;
 using Xunit.Abstractions;
 
-namespace Consumer.Test
+namespace Order.Test
 {
     /// <summary>
     /// Output to an xUnit test output helper

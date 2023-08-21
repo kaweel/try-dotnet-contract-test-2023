@@ -28,7 +28,7 @@
 // app.Run();
 
 
-namespace Provider
+namespace ProductService
 {
     public class Program
     {
