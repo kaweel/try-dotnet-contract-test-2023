@@ -21,12 +21,6 @@ namespace ProductService
             _products[product.Id] = product;
             return Task.CompletedTask;
         }
-
-        public Task ReserveProduct(int id)
-        {
-            _products[id].Status = "Reserved";
-            return Task.CompletedTask;
-        }
     }
 
 

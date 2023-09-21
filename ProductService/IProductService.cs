@@ -5,7 +5,5 @@ namespace ProductService
         Task<Product> GetProductByIdAsync(int id);
 
         Task InsertAsync(Product product);
-
-        Task ReserveProduct(int id);
     }
 }
