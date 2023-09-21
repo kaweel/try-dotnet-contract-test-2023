@@ -33,11 +33,11 @@ namespace Order.Test
                 LogLevel = PactLogLevel.Debug
             };
 
-            _pact = Pact.V3("Order-GetProductsById", "Product", config).WithHttpInteractions();
+            _pact = Pact.V3("order-get-products-by-id", "product", config).WithHttpInteractions();
         }
 
         [Fact]
-        [Trait("Category", "Consumer")]
+        [Trait("category", "consumer-products")]
         public async Task GetProductsByIdAsyncExists()
         {
             var expected = new Product(9, "CL500", "Motorcycle", "InStock");
@@ -89,7 +89,7 @@ namespace Order.Test
         }
 
         [Fact]
-        [Trait("Category", "Consumer")]
+        [Trait("category", "consumer-products")]
         public async Task GetProductsByIdAsyncDoesNotExists()
         {
             _pact

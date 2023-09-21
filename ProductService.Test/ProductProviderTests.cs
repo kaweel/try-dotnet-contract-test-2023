@@ -44,10 +44,10 @@ namespace ProductService.Test
         }
 
         [Fact]
-        [Trait("Category", "Provider")]
+        [Trait("category", "provider-products")]
         public void Verify()
         {
-            var pactFile = new FileInfo(Path.Join("..", "..", "..", "..", "pacts", "Order-GetProductsById-Product.json"));
+            var pactFile = new FileInfo(Path.Join("..", "..", "..", "..", "pacts", "order-get-products-by-id-product.json"));
             _verifier
             .ServiceProvider("Product", _providerUri)
             .WithFileSource(pactFile)

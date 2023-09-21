@@ -41,4 +41,4 @@ services:
       PACT_BROKER_USERNAME: try_pact
       PACT_BROKER_PASSWORD: try_pact
       PACT_BROKER_PUBLISH_VERIFICATION_RESULTS: true
-    command: "verify  --provider-base-url http://host.docker.internal:5195 --provider 'Product' --provider-app-version 1.0.0 --wait 10"
+    command: "verify --provider-base-url http://host.docker.internal:5195 --provider 'product' --provider-app-version 1.0.0 --wait 10"

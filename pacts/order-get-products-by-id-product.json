@@ -1,6 +1,6 @@
 {
   "consumer": {
-    "name": "Order-GetProductsById"
+    "name": "order-get-products-by-id"
   },
   "interactions": [
     {
@@ -62,6 +62,6 @@
     }
   },
   "provider": {
-    "name": "Product"
+    "name": "product"
   }
 }
