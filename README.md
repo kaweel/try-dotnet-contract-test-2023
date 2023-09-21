@@ -1,10 +1,23 @@
-# try-dotnet-contract-test-2023
+# Dotnet contract test
 
+Learn how to make contract test example with RESTful API.
 
-docker compose up -d contract-postgres --remove-orphans
+### Start postgres 
+``` 
+$make postgres
+```
 
-docker compose up -d contract-pact-broker --remove-orphans
+### Start pact broker 
+``` 
+$make pact-broker 
+```
 
-docker compose up -d contract-pact-broker-publish --remove-orphans
+### Publish contract
+``` 
+$make pact-broker-publish
+```
 
-docker compose up -d contract-pact-broker-verify --remove-orphans
+### Verify contract
+``` 
+$make pact-broker-verify
+```
